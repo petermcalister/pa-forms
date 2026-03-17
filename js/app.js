@@ -351,21 +351,28 @@
     });
 
     var response = "COWORK_FORM:" + form.id + "|" + parts.join("|");
-    var waUrl = "https://wa.me/?text=" + encodeURIComponent(response);
 
-    // Open wa.me link
+    // Copy to clipboard and show the response for manual paste
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(response).catch(function () {});
+    }
+
+    // Try wa.me deep link (lets user pick contact/group)
+    var waUrl = "https://wa.me/?text=" + encodeURIComponent(response);
     window.open(waUrl, "_blank");
 
-    // Show success
-    showSuccess();
+    // Show success with response string as fallback
+    showSuccess(response);
   }
 
-  function showSuccess() {
+  function showSuccess(response) {
     app.innerHTML = "";
     var screen = h("div", { className: "success-screen" },
       h("div", { className: "success-icon" }, "\u2705"),
       h("div", { className: "success-title" }, "Form submitted!"),
-      h("div", { className: "success-body" }, "Your response has been sent via WhatsApp. You can close this page.")
+      h("div", { className: "success-body" }, "Paste this into the cowork-pa WhatsApp group if WhatsApp didn't open automatically:"),
+      h("pre", { className: "response-string", style: "background:#1e1e2e;padding:12px;border-radius:8px;font-size:13px;word-break:break-all;margin-top:12px;user-select:all;cursor:pointer" }, response),
+      h("div", { className: "success-body", style: "margin-top:8px;opacity:0.6;font-size:13px" }, "Response also copied to clipboard.")
     );
     app.appendChild(screen);
   }
